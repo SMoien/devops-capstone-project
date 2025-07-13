@@ -10,15 +10,16 @@ spec:
   params:
     - name: args
       description: The arguments to pass
-      type: string
-      default: "-v"
+      type: array
+      default: 
+        - "-v"
     - name: database_uri
       description: database connection string
       type: string
       default: "sqlite:///test.db"
   steps:
     - name: nosetests
-      image: "python:3.9-slim"
+      image: python:3.9-slim
       workingDir: $(workspaces.source.pathp
       env:
         - name: DATABASE_URI
@@ -28,8 +29,8 @@ spec:
         set -e
         python -m pip install --upgrade pip wheel
         pip install -qr requirements.txt
-        nosetests -v --with-spec --spec-coloraces.source.path)
-
+        nosetests "$@"
+      args: ["$(params.args[*])"]
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
